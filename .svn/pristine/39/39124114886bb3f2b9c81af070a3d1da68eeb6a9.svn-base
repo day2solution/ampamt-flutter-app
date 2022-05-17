@@ -1,0 +1,544 @@
+import 'dart:convert';
+
+import 'package:ampamt/ApiProvider.dart';
+import 'package:ampamt/CommonConstant.dart';
+import 'package:ampamt/SuccessModel.dart';
+import 'package:ampamt/docupload/doctor-document-upload.dart';
+import 'package:ampamt/model/doctor/DoctorsAccountDetailsModel.dart';
+import 'package:ampamt/model/doctor/DocumentsVerificationModel.dart';
+import 'package:ampamt/model/payment/razorpay-payment-model.dart';
+import 'package:ampamt/style.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+class PaymentPage extends StatefulWidget{
+  PaymentPage({this.accountId,this.allDocUploaded}) : super();
+  final String accountId;
+  final String allDocUploaded;
+  @override
+  _PaymentPageState createState()=>_PaymentPageState(accountId: accountId,allDocUploaded: allDocUploaded);
+
+}
+class _PaymentPageState extends State<PaymentPage>{
+  _PaymentPageState({this.accountId,this.allDocUploaded});
+  final String accountId;
+  final String allDocUploaded;
+  // static MediaQueryData _mediaQueryData;
+  // static double screenWidth;
+  // static double screenHeight;
+
+  @override
+  Widget build(BuildContext context) {
+    print('accountId=$accountId');
+    // _mediaQueryData = MediaQuery.of(context);
+    // screenWidth = _mediaQueryData.size.width;
+    // screenHeight = _mediaQueryData.size.height;
+    // final _formKey = GlobalKey<FormState>();
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: CompanyStyle.primaryColor,
+        title:  Row(
+          children: [
+            Image.asset('assets/images/payment/bank.png',width: 40,height: 40),
+            Container(
+                padding: const EdgeInsets.all(10.0), child: Text('Make Payment'))
+          ],
+        ),
+      ),
+      body:MyPaymentForm(accountId: accountId,allDocUploaded: allDocUploaded,),
+    );
+  }
+  getButtonStyle(){
+    return ElevatedButton.styleFrom(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(32.0),
+      ),
+      primary:CompanyStyle.primaryColor,
+    );
+  }
+}
+class MyPaymentForm extends StatefulWidget {
+  MyPaymentForm({Key key, this.accountId,this.allDocUploaded}) : super(key: key);
+  final String accountId;
+  final String allDocUploaded;
+  @override
+  MyPaymentFormState createState() {
+    return MyPaymentFormState(accountId: accountId,allDocUploaded: allDocUploaded);
+  }
+}
+
+class MyPaymentFormState extends State<MyPaymentForm> {
+  MyPaymentFormState({Key key, this.accountId,this.allDocUploaded}) ;
+  final String accountId;
+  final String allDocUploaded;
+  static const platform = const MethodChannel("razorpay_flutter");
+  List<DoctorsAccountDetailsModel> doctorsAccountDetailsModelList=[];
+  Future<List<DoctorsAccountDetailsModel>> doctorsAccountDetailsFutureList;
+  Future<SuccessModel> paymentRequestFutureSuccessModel;
+  SuccessModel paymentRequestSuccessModel;
+  bool isLoading=true;
+  // final _scaffoldKey = GlobalKey<ScaffoldState>();
+  Razorpay _razorpay;
+  @override
+  void initState() {
+    print('payment page accountId=$accountId');
+    super.initState();
+    _razorpay = Razorpay();
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+    doctorsAccountDetailsFutureList=getDoctorAccount(context);
+    paymentRequestFutureSuccessModel=getPaymentReqData(context);
+  }
+  @override
+  void dispose() {
+    super.dispose();
+    _razorpay.clear();
+  }
+  void openCheckout(String orderId,String transactionId) async {
+
+    var options = {
+      'key': CommonConstant.KEY_ID_LIVE,
+      "currency": "INR",
+      "name": "AMPAMT",
+      "order_id": orderId,
+      'description': 'Practitioner Payment',
+      "image": "https://ampamt.com/assets/images/icon.png",
+      'prefill': {'contact': doctorsAccountDetailsModelList[0].contactNo, 'email': doctorsAccountDetailsModelList[0].emailId},
+      "send_sms_hash":"true",
+
+      "notes": {
+        "address": "AMPAMT Head Office",
+        "transactionId": transactionId
+      },
+      "theme": {
+        "color": "#5C0202"
+      }
+    };
+
+    try {
+      _razorpay.open(options);
+    } catch (e) {
+      debugPrint(e);
+    }
+  }
+  showError(){
+    showSnackBar(
+        context, 'Error occurred while initiating payment, please try again after sometime.', Colors.red, Colors.white);
+  }
+  Future<List<DoctorsAccountDetailsModel>> getDoctorAccount( BuildContext context) async{
+    Map<String, dynamic> reqBody = new Map<String, String>();
+    reqBody={
+      'id': accountId,
+      'accountType': CommonConstant.ACCOUNT_DOCTOR
+    };
+    ApiProvider _provider = new ApiProvider();
+    try {
+      final response = await _provider.post("/account/get-doctor-detail",reqBody);
+      doctorsAccountDetailsModelList = (response as List).map((data) => DoctorsAccountDetailsModel.fromJson(data)).toList();
+
+    } catch (e) {
+      debugPrint('error at getDoctorAccount page='+e.toString().toString());
+      showSnackBar(context, e.toString().toString(), Colors.red, Colors.white);
+    }
+    return doctorsAccountDetailsModelList;
+  }
+
+  Future<SuccessModel> getPaymentReqData(BuildContext context) async{
+    Map<String, dynamic> reqBody = new Map<String, String>();
+    reqBody={
+      'accountId': accountId,
+      'accountType': CommonConstant.ACCOUNT_DOCTOR
+
+    };
+    ApiProvider _provider = new ApiProvider();
+    // SuccessModel successModel;
+    try {
+      final response = await _provider.post("/payment/get-payment-data",reqBody);
+      paymentRequestSuccessModel = SuccessModel.fromJson(response);
+      setState(() {
+        isLoading=false;
+      });
+      if(paymentRequestSuccessModel!=null && paymentRequestSuccessModel.orderId!=null){
+
+      }else{
+
+      }
+    } catch (e) {
+      debugPrint('error at getDoctorAccount page='+e.toString().toString());
+      showSnackBar(context, e.toString().toString(), Colors.red, Colors.white);
+    }
+    return paymentRequestSuccessModel;
+  }
+  processPayment( SuccessModel successModel){
+    debugPrint('orderId=${successModel.orderId}');
+    debugPrint('transactionId=${successModel.id}');
+    debugPrint('paymentRequestSuccessModel transactionId=${paymentRequestSuccessModel.id}');
+    openCheckout(successModel.orderId,successModel.id);
+  }
+  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    print('payment response');
+    print(response.orderId);
+    print(response.paymentId);
+    print(response.signature);
+
+    updatePaymentResponse(response);
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    print('_handlePaymentError response');
+    print('message=${response.message}');
+    print('code=${response.code}');
+    // PaymentResponse paymentResponse;
+    RazorpayPaymentModelError paymentResponse=RazorpayPaymentModelError.fromJson(json.decode(response.message));
+    print('description=${paymentResponse.error.description}');
+
+    Fluttertoast.showToast(
+        msg: "ERROR: "+paymentResponse.error.description, timeInSecForIosWeb: 20
+    );
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    Fluttertoast.showToast(
+        msg: "EXTERNAL_WALLET: " + response.walletName, timeInSecForIosWeb: 10
+    );
+  }
+  // final _formKey = GlobalKey<FormState>();
+
+  static MediaQueryData _mediaQueryData;
+  static double screenWidth;
+  // static double screenHeight;
+  // bool _showPassword = false;
+  @override
+  Widget build(BuildContext context) {
+    // Build a Form widget using the _formKey created above.
+    _mediaQueryData = MediaQuery.of(context);
+    screenWidth = _mediaQueryData.size.width;
+    // screenHeight = _mediaQueryData.size.height;
+
+    return Container(
+
+      child: ListView(
+        shrinkWrap: true,
+        padding: EdgeInsets.all(5.0),
+
+        children: <Widget>[
+          Card(
+            elevation: 10.0,
+            color: CompanyStyle.primaryColor[100],
+            child:Container(
+              padding: const EdgeInsets.all(5.0),
+              child:Row(
+                children:<Widget>[
+                  // Image.asset('assets/images/payment/payment-done.png',width: 40,height: 40,),
+                  Text('\t₹ 3,000.00\nFor 1 to 5,000 Members(10 Yr.)\t\t\t',
+                      style: TextStyle(fontSize: screenWidth/25,)),
+                  CompanyStyle.getInputElementGap(),
+                  // RaisedButton(onPressed: openCheckout, child: Text('Open')),
+                  Container(
+                    alignment: Alignment.center,
+                    decoration: const BoxDecoration(
+
+                      shape: BoxShape.circle,
+                    ),
+                    padding: EdgeInsets.all(2),
+                    child:FutureBuilder(
+                        future: doctorsAccountDetailsFutureList,
+                        builder: (context,AsyncSnapshot snapshot){
+
+                          if(snapshot.data==null){
+                            return showLoading();
+                          }else if(snapshot.hasError){
+                            debugPrint('error at haserror');
+                            return ElevatedButton(
+                                style: CompanyStyle.getButtonStyle(),
+                                child: Text('Pay Now', style: TextStyle(fontSize: screenWidth/25,),),
+                                onPressed:showError
+                            );
+                          }
+                          else{
+                            return FutureBuilder(
+                                future: paymentRequestFutureSuccessModel,
+                                builder: (context,AsyncSnapshot snapshot) {
+                                  if (snapshot.data == null) {
+                                    return showLoading();
+                                  }
+                                  else if (snapshot.hasError) {
+                                    debugPrint('error at haserror');
+                                    return ElevatedButton(
+                                        style: CompanyStyle.getButtonStyle(),
+                                        child: Text('Pay Now', style: TextStyle(
+                                          fontSize: screenWidth / 25,),),
+                                        onPressed: showError
+                                    );
+                                  } else {
+
+                                    return ElevatedButton(
+                                        style: CompanyStyle.getButtonStyle(),
+                                        child: Text('Pay Now', style: TextStyle(
+                                          fontSize: screenWidth / 25,),),
+                                        onPressed: () {
+                                          processPayment(snapshot.data);
+                                        }
+                                    );
+                                  }
+                                }
+                                );
+                          }
+                        }
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+          Card(
+            elevation: 10.0,
+            color: CompanyStyle.primaryColor[100],
+            child:Container(
+              padding: const EdgeInsets.all(5.0),
+              child:Row(
+                children:<Widget>[
+                  Image.asset('assets/images/payment/payment-done.png',width:  screenWidth/10,height:  screenWidth/10,),
+                  Text('\tMake Payment Through\r\n Our Website',
+                      style: TextStyle(fontSize: screenWidth/25,)),
+                  Icon(
+                    Icons.navigate_next,
+                    color: CompanyStyle.primaryColor[800],
+                    size: screenWidth/10,
+                  ),
+                  CompanyStyle.getInputElementGap(),
+                  isLoading?showLoading():ElevatedButton(
+                    style: CompanyStyle.getButtonStyle(),
+                    child: Container(
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                      ),
+                      padding: EdgeInsets.all(2),
+                      child: Text('Open', style: TextStyle(fontSize: screenWidth/25,),),
+                    ),
+                    onPressed:(){
+                      _launchInBrowser();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Card(
+            elevation: 10.0,
+            color: CompanyStyle.primaryColor[100],
+            child:Container(
+              padding: const EdgeInsets.all(5.0),
+              child:Row(
+                children:<Widget>[
+                  Image.asset('assets/images/payment/payment-done.png',width:  screenWidth/10,height:  screenWidth/10,),
+                  Text('\tAfter Payment',
+                      style: TextStyle(fontSize: screenWidth/25,)),
+                  Icon(
+                    Icons.navigate_next,
+                    color: CompanyStyle.primaryColor[800],
+                    size: screenWidth/10,
+                  ),
+                  CompanyStyle.getInputElementGap(),
+                  isLoading?showLoading():ElevatedButton(
+                    style: CompanyStyle.getButtonStyle(),
+                    child: Container(
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                      ),
+                      padding: EdgeInsets.all(2),
+                      child: Text('Click Here', style: TextStyle(fontSize: screenWidth/25,),),
+
+                    ),
+                    onPressed: () {
+                      checkPaymentStatus();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget showLoading(){
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          SizedBox(
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              backgroundColor: Colors.white,
+              valueColor: AlwaysStoppedAnimation<Color>(CompanyStyle.primaryColor[900]),
+            ),
+            height:20,
+            width: 20,
+          ),
+          // SizedBox(height: 10,),
+          // Text('Loading Users...',style: TextStyle(fontSize: screenWidth/20),),
+        ],
+      ),
+    );
+  }
+  checkPaymentStatus() async{
+
+    ApiProvider _provider = new ApiProvider();
+    // Fluttertoast.showToast(msg: "SUCCESS: " + response.paymentId, timeInSecForIosWeb: 5);
+    Map<String, dynamic> paymentReqBody = new Map<String, String>();
+    paymentReqBody={
+      'id': accountId,
+      'accountType': CommonConstant.ACCOUNT_DOCTOR
+    };
+    showSnackBar(context, 'Processing Payment Check Please Wait...', Colors.green, Colors.white);
+    List<DocumentsVerificationModel> documentsVerificationModelList=[];
+    try {
+      final response = await _provider.post("/account/get-documentVerification-details", paymentReqBody);
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      documentsVerificationModelList = (response as List).map((data) => DocumentsVerificationModel.fromJson(data)).toList();
+
+      print('documentsVerificationModelList');
+      print(documentsVerificationModelList);
+
+    } catch (e) {
+      setState(() {
+        // isLoginProcessed = false;
+      });
+
+      showSnackBar(context, e.toString().toString(), Colors.red, Colors.white);
+    }
+    if (documentsVerificationModelList != null && documentsVerificationModelList.length>0) {
+
+      double availableAmount=0;
+      if (documentsVerificationModelList[0].availableAmount !=null) {
+        availableAmount=double.parse(documentsVerificationModelList[0].availableAmount);
+        debugPrint('allDocUploaded=$allDocUploaded');
+        if(availableAmount>0){
+          // showSnackBar(context, 'Payment Received proceeding next.', Colors.green, Colors.white);
+          Navigator.pop(context);
+          if(allDocUploaded==null || allDocUploaded==CommonConstant.FLAG_N){
+            Fluttertoast.showToast(msg: "Payment Received, Please Upload Required Documents", timeInSecForIosWeb: 5);
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>DoctorDocumentUpload(accountId: accountId,)));
+          }
+
+        }else{
+          showSnackBar(
+              context, 'Sorry! We have not received any payment from your side please Make Payment first to proceed next.', Colors.red, Colors.white);
+        }
+
+      } else{
+        availableAmount=0;
+        showSnackBar(
+            context, 'Sorry! We have not received any payment from your side please Make Payment first to proceed next.', Colors.red, Colors.white);
+      }
+    }else{
+
+      showSnackBar(
+          context, 'Something went wrong,if amount deducted it will reflect in our account soon.', Colors.red, Colors.white);
+    }
+  }
+  SnackBar normalSnackBar(String msg, Color bgcolor, Color txtColor){
+    return SnackBar(
+        content: Text(msg,
+          style: TextStyle(color:txtColor),
+        ),
+        backgroundColor: bgcolor
+    );
+  }
+  showSnackBar(BuildContext context, String msg, Color bgcolor, Color txtColor) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          msg,
+          style: TextStyle(color: txtColor),
+        ),
+        backgroundColor: bgcolor,
+      ));
+    });
+  }
+  Future<void> _launchInBrowser() async {
+    String url = "https://ampamt.com/#/home/doctor-login";
+    try {
+      if (await canLaunch(url)) {
+        await launch(url);
+      } else {
+        showSnackBar(
+            context, 'Could not launch $url', Colors.red, Colors.white);
+        throw 'Could not launch $url';
+      }
+    }
+    catch (e) {
+      print(e);
+    }
+  }
+  showProgressIndicator(String msg){
+    EasyLoading.show(status: msg);
+  }
+  showSuccessIndicator(String msg){
+    EasyLoading.showSuccess(msg,duration: Duration(milliseconds: 700));
+  }
+  dismissProgressIndicator(){
+    EasyLoading.dismiss(animation: true);
+  }
+  void updatePaymentResponse(PaymentSuccessResponse response) async{
+    print("response");
+    print(response);
+    ApiProvider _provider = new ApiProvider();
+    // Fluttertoast.showToast(msg: "SUCCESS: " + response.paymentId, timeInSecForIosWeb: 5);
+    Map<String, dynamic> paymentReqBody = new Map<String, String>();
+    paymentReqBody={
+      'paymentId': response.paymentId,
+      'orderId': response.orderId,
+      'signature': response.signature,
+      'accountId':accountId,
+      'transactionId':paymentRequestSuccessModel.id
+    };
+    // showSnackBar(context, 'Processing Payment Please Wait...', Colors.green, Colors.white);
+    showProgressIndicator("Processing Please Wait...");
+    SuccessModel response2;
+    try {
+      final response = await _provider.post("/payment/save-app-payment-response", paymentReqBody);
+      // ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+      response2 = SuccessModel.fromJson(response);
+      dismissProgressIndicator();
+      if (response2 != null) {
+        if (response2.status == CommonConstant.STATUS_SUCCESS) {
+          showSnackBar(context, 'Payment Success', Colors.green, Colors.white);
+          // showSuccessIndicator("Payment Success");
+          Navigator.pop(context);
+          if(allDocUploaded==null || allDocUploaded==CommonConstant.FLAG_N){
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>DoctorDocumentUpload(accountId: accountId,)));
+          }
+
+        } else if (response2.status == CommonConstant.STATUS_FAILED) {
+
+          showSnackBar(
+              context, 'Payment Failed, Please try again.', Colors.red, Colors.white);
+        } else {
+          showSnackBar(
+              context, 'Something Went Wrong,If amount deducted it will reflect in our account soon.', Colors.red, Colors.white);
+        }
+      }else{
+        showSnackBar(
+            context, 'Something Went Wrong,If amount deducted it will reflect in our account soon.', Colors.red, Colors.white);
+      }
+    } catch (e) {
+      setState(() {
+        // isLoginProcessed = false;
+      });
+      dismissProgressIndicator();
+      showSnackBar(context, e.toString().toString(), Colors.red, Colors.white);
+    }
+
+  }
+}

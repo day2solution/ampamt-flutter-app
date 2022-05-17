@@ -1,0 +1,4 @@
+storePassword=ampamt567
+keyPassword=ampamt567
+keyAlias=ampamt
+storeFile=ampamt_keystore.jks

@@ -1,0 +1,204 @@
+name: ampamt
+description: An ampamt project.
+
+# The following line prevents the package from being accidentally published to
+# pub.dev using `pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+version: 2.5.0+2050
+
+environment:
+  sdk: ">=2.11.0 <3.0.0"
+
+dependencies:
+  flutter_slidable: ^0.6.0
+  url_launcher: ^6.0.9
+  step_progress_indicator: ^1.0.1
+  flutter_phone_direct_caller: ^2.0.0
+  search_widget: ^1.0.2
+  share: ^2.0.4
+  photo_view: ^0.11.1
+  http_interceptor: ^1.0.0
+  flutter_bloc: ^7.0.1
+  connectivity: ^3.0.6
+  flutter_easyloading: ^3.0.0
+  razorpay_flutter: ^1.2.7
+  image_picker: ^0.8.1+3
+  fluttertoast: ^8.0.7
+  intl: ^0.17.0
+  flutter_datetime_picker: ^1.5.1
+  http: ^0.13.3
+  carousel_slider: ^4.0.0
+  cupertino_icons: ^1.0.3
+  checkbox_formfield: ^0.1.0+3
+  webview_flutter: ^2.0.9
+  flutter_image_compress: ^1.0.0
+  multi_select_flutter: ^4.0.0
+  flutter_native_image: ^0.0.6
+  get_version: ^0.2.2
+  smart_select: ^4.3.2
+  in_app_update: ^2.0.0
+  shared_preferences: ^2.0.6
+  flutter_svg: ^0.22.0
+  crypt: ^4.0.1
+  encrypt: ^5.0.0
+  path_provider: ^2.0.2
+  pdf: ^3.4.2
+  advance_pdf_viewer: ^2.0.0
+  flutter:
+    sdk: flutter
+
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+
+dev_dependencies:
+  flutter_native_splash: ^1.2.0
+  flutter_test:
+    sdk: flutter
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+flutter_native_splash:
+  color: "#5C0202"
+  image: assets/images/icon.png
+# The following section is specific to Flutter.
+flutter:
+  assets:
+    - assets/images/icon.png
+    - assets/images/access_denied.png
+    - assets/images/pdf_icon.png
+    - assets/svg/empty_box.svg
+    - assets/images/home/business_login.png
+    - assets/images/home/doctor_login.png
+    - assets/images/home/iso.png
+    - assets/images/home/msme.png
+    - assets/images/home/100-secure.png
+    - assets/images/payment/bank.png
+    - assets/images/payment/payment-done.png
+    - assets/images/home/upload-doc.png
+
+    - assets/images/dashboard/app/1.png
+    - assets/images/dashboard/app/2.png
+    - assets/images/dashboard/app/3.png
+    - assets/images/dashboard/app/4.png
+    - assets/images/dashboard/app/5.png
+    - assets/images/dashboard/app/6.png
+    - assets/images/dashboard/app/7.png
+    - assets/images/dashboard/app/8.png
+    - assets/images/dashboard/app/9.png
+    - assets/images/dashboard/app/10.png
+    - assets/images/dashboard/app/11.png
+    - assets/images/dashboard/app/12.png
+    - assets/images/dashboard/app/13.png
+    - assets/images/dashboard/app/14.png
+    - assets/images/dashboard/app/15.png
+    - assets/images/dashboard/app/16.png
+    - assets/images/dashboard/app/17.png
+    - assets/images/dashboard/app/18.png
+    - assets/images/dashboard/app/19.png
+    - assets/images/dashboard/app/20.png
+    - assets/images/dashboard/app/21.png
+    - assets/images/dashboard/app/22.png
+    - assets/images/dashboard/app/23.png
+    - assets/images/dashboard/app/24.png
+    - assets/images/dashboard/app/25.png
+    - assets/images/dashboard/app/26.png
+    - assets/images/dashboard/app/27.png
+    - assets/images/dashboard/app/28.png
+    - assets/images/dashboard/app/29.png
+    - assets/images/dashboard/app/30.png
+    - assets/images/dashboard/app/31.png
+    - assets/images/dashboard/app/32.png
+    - assets/images/dashboard/app/33.png
+    - assets/images/dashboard/app/34.png
+    - assets/images/dashboard/app/35.png
+    - assets/images/dashboard/app/36.png
+    - assets/images/dashboard/app/37.png
+    - assets/images/dashboard/app/38.png
+    - assets/images/dashboard/app/39.png
+    - assets/images/dashboard/app/40.png
+    - assets/images/dashboard/app/41.png
+    - assets/images/dashboard/app/42.png
+    - assets/images/dashboard/app/43.png
+    - assets/images/dashboard/app/44.png
+    - assets/images/dashboard/app/45.png
+    - assets/images/dashboard/app/46.png
+    - assets/images/dashboard/app/47.png
+    - assets/images/dashboard/app/48.png
+    - assets/images/dashboard/app/49.png
+    - assets/images/dashboard/app/50.png
+    - assets/images/dashboard/app/51.png
+    - assets/images/dashboard/app/52.png
+    - assets/images/dashboard/app/53.png
+    - assets/images/dashboard/app/54.png
+    - assets/images/dashboard/app/55.png
+    - assets/images/dashboard/app/56.png
+    - assets/images/dashboard/app/57.png
+    - assets/images/dashboard/app/59.png
+    - assets/images/dashboard/app/60.png
+    - assets/images/dashboard/app/61.png
+    - assets/images/dashboard/app/62.png
+    - assets/images/dashboard/app/64.png
+    - assets/images/dashboard/app/99.png
+    - assets/images/dashboard/app/money_bag.png
+    - assets/images/dashboard/app/medicomp.png
+    - assets/images/dashboard/app/insurance.png
+    - assets/images/dashboard/app/ampamt.png
+    - assets/images/dashboard/app/temple.png
+    - assets/images/dashboard/app/otherservices.png
+    - assets/images/dashboard/app/payment-done.png
+    - assets/images/dashboard/app/doctor.png
+    - assets/images/support/active-call.png
+    - assets/images/support/call.png
+    - assets/images/support/email.png
+    - assets/images/dashboard/other/26.png
+    - assets/images/dashboard/other/41.png
+    - assets/images/dashboard/other/57.png
+    - assets/images/support/working-hours.png
+    - assets/images/dashboard/other/no_image.jpg
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  # assets:
+  #   - images/a_dot_burr.jpeg
+  #   - images/a_dot_ham.jpeg
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware.
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/assets-and-images/#from-packages
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages

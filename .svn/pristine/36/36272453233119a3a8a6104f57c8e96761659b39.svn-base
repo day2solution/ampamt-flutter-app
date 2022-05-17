@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/android.iml" filepath="$PROJECT_DIR$/.idea/modules/android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/android.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/android.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1255543587/android.connectivity.iml" filepath="$PROJECT_DIR$/.idea/modules/1255543587/android.connectivity.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-879473619/android.flutter_image_compress.iml" filepath="$PROJECT_DIR$/.idea/modules/-879473619/android.flutter_image_compress.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/508877881/android.flutter_keyboard_visibility.iml" filepath="$PROJECT_DIR$/.idea/modules/508877881/android.flutter_keyboard_visibility.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-2054882875/android.flutter_native_image.iml" filepath="$PROJECT_DIR$/.idea/modules/-2054882875/android.flutter_native_image.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1265720166/android.flutter_phone_direct_caller.iml" filepath="$PROJECT_DIR$/.idea/modules/-1265720166/android.flutter_phone_direct_caller.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1790642616/android.flutter_plugin_android_lifecycle.iml" filepath="$PROJECT_DIR$/.idea/modules/1790642616/android.flutter_plugin_android_lifecycle.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/466126205/android.fluttertoast.iml" filepath="$PROJECT_DIR$/.idea/modules/466126205/android.fluttertoast.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1459961246/android.get_version.iml" filepath="$PROJECT_DIR$/.idea/modules/1459961246/android.get_version.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1850631009/android.image_picker.iml" filepath="$PROJECT_DIR$/.idea/modules/-1850631009/android.image_picker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-544043602/android.in_app_update.iml" filepath="$PROJECT_DIR$/.idea/modules/-544043602/android.in_app_update.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1852578074/android.package_info.iml" filepath="$PROJECT_DIR$/.idea/modules/1852578074/android.package_info.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-990078214/android.path_provider.iml" filepath="$PROJECT_DIR$/.idea/modules/-990078214/android.path_provider.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-527911324/android.razorpay_flutter.iml" filepath="$PROJECT_DIR$/.idea/modules/-527911324/android.razorpay_flutter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1942637840/android.share.iml" filepath="$PROJECT_DIR$/.idea/modules/1942637840/android.share.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/456783817/android.shared_preferences.iml" filepath="$PROJECT_DIR$/.idea/modules/456783817/android.shared_preferences.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-497669460/android.webview_flutter.iml" filepath="$PROJECT_DIR$/.idea/modules/-497669460/android.webview_flutter.iml" />
+    </modules>
+  </component>
+</project>

@@ -1,0 +1,5 @@
+sdk.dir=C:\\Users\\rahul\\AppData\\Local\\Android\\Sdk
+flutter.sdk=C:\\flutter_2.2.3\\flutter
+flutter.buildMode=release
+flutter.versionName=2.5.0
+flutter.versionCode=2050
